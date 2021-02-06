@@ -13,6 +13,7 @@ public class SwerveModule {
 
     // Variables
     private final double wheelRadius = 0.0508;
+    private final boolean isReversed;
 
     private final CANSparkMax driveMotor;
     private final CANSparkMax turnMotor;
@@ -20,13 +21,13 @@ public class SwerveModule {
     private final CANEncoder driveEncoder;
     private final AnalogEncoder turnEncoder;
 
-    private final PIDController drivePID = new PIDController(1, 0, 0);
-    private final PIDController turnPID = new PIDController(1, 0, 0);
+    private final PIDController drivePID = new PIDController(0.01, 0, 0);
+    private final PIDController turnPID = new PIDController(4, 0, 0);
 
     private final SimpleMotorFeedforward driveFF = new SimpleMotorFeedforward(0.15, 2.9, 0.3);
 
     // Constructor
-    public SwerveModule(int driveID, int turnID, int turnChannel, int turnOffset) {
+    public SwerveModule(int driveID, int turnID, int turnChannel, double turnOffset, boolean isReversed) {
         driveMotor = new CANSparkMax(driveID, MotorType.kBrushless);
         turnMotor = new CANSparkMax(turnID, MotorType.kBrushless);
 
@@ -34,6 +35,13 @@ public class SwerveModule {
         turnEncoder = new AnalogEncoder(turnChannel, turnOffset);
 
         turnPID.enableContinuousInput(-Math.PI, Math.PI);
+
+        this.isReversed = isReversed;
+    }
+
+    // Set Drive method
+    public void setDrive(double voltage) {
+        driveMotor.setVoltage(isReversed ? -voltage : voltage);
     }
 
     // Get state method
@@ -70,7 +78,7 @@ public class SwerveModule {
             12
         );
 
-        driveMotor.setVoltage(driveOutput);
+        setDrive(driveOutput);
         turnMotor.setVoltage(turnOutput);
     }  
     

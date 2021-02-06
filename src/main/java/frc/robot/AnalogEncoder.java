@@ -19,10 +19,10 @@ public class AnalogEncoder {
         if (analogAngle < 0.0) {
             analogAngle = 2.0 * Math.PI - Math.abs(analogAngle);
         }
-        if (analogAngle > 180) {
-            analogAngle = analogAngle - 360;
+        if (analogAngle > Math.PI) {
+            analogAngle = analogAngle - 2.0 * Math.PI;
         }
-        return analogAngle;
+        return -analogAngle;
     }
      
 }
