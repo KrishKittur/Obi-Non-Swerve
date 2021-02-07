@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpiutil.math.MathUtil;
 
 public class SwerveModule {
@@ -21,13 +22,15 @@ public class SwerveModule {
     private final CANEncoder driveEncoder;
     private final AnalogEncoder turnEncoder;
 
-    private final PIDController drivePID = new PIDController(0.01, 0, 0);
+    private final PIDController drivePID = new PIDController(0, 0, 0);
     private final PIDController turnPID = new PIDController(4, 0, 0);
 
     private final SimpleMotorFeedforward driveFF = new SimpleMotorFeedforward(0.15, 2.9, 0.3);
 
+    private final String moduleName;
+
     // Constructor
-    public SwerveModule(int driveID, int turnID, int turnChannel, double turnOffset, boolean isReversed) {
+    public SwerveModule(int driveID, int turnID, int turnChannel, double turnOffset, boolean isReversed, String moduleName) {
         driveMotor = new CANSparkMax(driveID, MotorType.kBrushless);
         turnMotor = new CANSparkMax(turnID, MotorType.kBrushless);
 
@@ -37,6 +40,7 @@ public class SwerveModule {
         turnPID.enableContinuousInput(-Math.PI, Math.PI);
 
         this.isReversed = isReversed;
+        this.moduleName = moduleName;
     }
 
     // Set Drive method
@@ -77,6 +81,9 @@ public class SwerveModule {
             -12,
             12
         );
+
+        SmartDashboard.putNumber(moduleName + " " + "Desired Angle", state.angle.getRadians());
+        SmartDashboard.putNumber(moduleName + " " + "Angle", turnEncoder.readEncoder());
 
         setDrive(driveOutput);
         turnMotor.setVoltage(turnOutput);
