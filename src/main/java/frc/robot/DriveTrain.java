@@ -56,12 +56,13 @@ public class DriveTrain {
                 )
             );
         }
-        
         SwerveDriveKinematics.normalizeWheelSpeeds(swerveModuleStates, maxSpeed);
         frontLeft.setDesiredState(swerveModuleStates[0]);
         frontRight.setDesiredState(swerveModuleStates[1]);
         backLeft.setDesiredState(swerveModuleStates[2]);
         backRight.setDesiredState(swerveModuleStates[3]);
+
+
 
     }
     
