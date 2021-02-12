@@ -3,8 +3,7 @@ package frc.robot;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import edu.wpi.first.wpilibj.controller.PIDController;
-import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.controller.PIDController;   
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -21,16 +20,14 @@ public class SwerveModule {
 
     private final CANEncoder driveEncoder;
     private final AnalogEncoder turnEncoder;
-
-    private final PIDController drivePID = new PIDController(0, 0, 0);
-    private final PIDController turnPID = new PIDController(4, 0, 0);
-
-    private final SimpleMotorFeedforward driveFF = new SimpleMotorFeedforward(0.15, 2.9, 0.3);
+    private final PIDController turnPID = new PIDController(0.5, 0.0, 0.0001);
 
     private final String moduleName;
 
+    private final boolean encoderReversed;
+
     // Constructor
-    public SwerveModule(int driveID, int turnID, int turnChannel, double turnOffset, boolean isReversed, String moduleName) {
+    public SwerveModule(int driveID, int turnID, int turnChannel, double turnOffset, boolean isReversed, String moduleName, boolean encoderReversed) {
         driveMotor = new CANSparkMax(driveID, MotorType.kBrushless);
         turnMotor = new CANSparkMax(turnID, MotorType.kBrushless);
 
@@ -41,17 +38,19 @@ public class SwerveModule {
 
         this.isReversed = isReversed;
         this.moduleName = moduleName;
+        this.encoderReversed = encoderReversed;
     }
 
     // Set Drive method
-    public void setDrive(double voltage) {
-        driveMotor.setVoltage(isReversed ? -voltage : voltage);
+    public void setDrive(double dutyCycle) {
+        driveMotor.set(isReversed ? -dutyCycle : dutyCycle);
     }
 
     // Get state method
     public SwerveModuleState getState() {
         return new SwerveModuleState(
-            ((driveEncoder.getVelocity() * (1.0/7.04))/60.0) * 2 * Math.PI * wheelRadius, 
+            encoderReversed ? -(((driveEncoder.getVelocity() * (1.0/7.04))/60.0) * 2 * Math.PI * wheelRadius) : 
+            (((driveEncoder.getVelocity() * (1.0/7.04))/60.0) * 2 * Math.PI * wheelRadius), 
             new Rotation2d(turnEncoder.readEncoder())
         );
     }
@@ -62,31 +61,20 @@ public class SwerveModule {
             desiredState, new Rotation2d(turnEncoder.readEncoder())
         );
 
-        double drivePIDOutput = drivePID.calculate(
-            ((driveEncoder.getVelocity() * (1.0/7.04))/60.0) * 2 * Math.PI * wheelRadius, 
-            state.speedMetersPerSecond
-        );
-
-        double driveFFOutput = driveFF.calculate(
-            state.speedMetersPerSecond
-        );
-
-        double driveOutput = MathUtil.clamp(drivePIDOutput + driveFFOutput, -12, 12);
-
         double turnOutput = MathUtil.clamp(
             turnPID.calculate(
                 turnEncoder.readEncoder(), 
                 state.angle.getRadians()
             ),
-            -12,
-            12
+            -0.5,
+            0.5
         );
 
         SmartDashboard.putNumber(moduleName + " " + "Desired Angle", state.angle.getRadians());
         SmartDashboard.putNumber(moduleName + " " + "Angle", turnEncoder.readEncoder());
 
-        setDrive(driveOutput);
-        turnMotor.setVoltage(turnOutput);
+        setDrive(state.speedMetersPerSecond);
+        turnMotor.set(turnOutput);
     }  
     
 }
