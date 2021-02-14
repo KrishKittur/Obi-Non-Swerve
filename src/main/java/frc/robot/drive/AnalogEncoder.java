@@ -1,4 +1,4 @@
-package frc.robot;
+package frc.robot.drive;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.RobotController;
@@ -13,7 +13,7 @@ public class AnalogEncoder {
         this.analogOffset = offset;
     }
     
-    public double readEncoder() {
+    public double get() {
         double analogAngle = ((analogEncoder.getVoltage() / RobotController.getVoltage5V()) * 2.0 * Math.PI) - analogOffset;
         if (analogAngle < 0.0) {
             analogAngle = 2.0 * Math.PI - Math.abs(analogAngle);
