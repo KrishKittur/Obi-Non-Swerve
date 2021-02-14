@@ -28,9 +28,9 @@ public class Robot extends TimedRobot {
   DriveTrain swerve = new DriveTrain();
   Timer timer;
   HolonomicDriveController autoController = new HolonomicDriveController(
-    new PIDController(4.0, 0, 0), 
-    new PIDController(4.0, 0, 0), 
-    new ProfiledPIDController(4.0, 0, 0, new TrapezoidProfile.Constraints(Units.degreesToRadians(180), Units.degreesToRadians(120)))
+    new PIDController(0.5, 0, 0), 
+    new PIDController(0.5, 0, 0), 
+    new ProfiledPIDController(0.5, 0, 0, new TrapezoidProfile.Constraints(Units.degreesToRadians(180), Units.degreesToRadians(120)))
   );
 
   // Robot Init

@@ -53,21 +53,21 @@ public class DriveTrain {
             states[3] = brState;
         }
         SwerveDriveKinematics.normalizeWheelSpeeds(states, maxVel);
-        frontLeft.setDesiredState(states[0], output == Output.PERCENT ? Output.PERCENT : Output.VELOCITY);
-        frontRight.setDesiredState(states[1], output == Output.PERCENT ? Output.PERCENT : Output.VELOCITY);
-        backLeft.setDesiredState(states[2], output == Output.PERCENT ? Output.PERCENT : Output.VELOCITY);
-        backRight.setDesiredState(states[3], output == Output.PERCENT ? Output.PERCENT : Output.VELOCITY);
+        frontLeft.setDesiredState(states[0], output);
+        frontRight.setDesiredState(states[1], output);
+        backLeft.setDesiredState(states[2], output);
+        backRight.setDesiredState(states[3], output);
     }
 
     // Method to update odometry
     public void updateOdometry() {
         pose = odometry.update(
-                gyro.getRotation2d(), 
-                frontLeft.getState(),
-                frontRight.getState(),
-                backLeft.getState(),
-                backRight.getState());
-
+            gyro.getRotation2d(), 
+            frontLeft.getState(),
+            frontRight.getState(),
+            backLeft.getState(),
+            backRight.getState()
+        );
     }
 
     // Method to reset the drive
