@@ -28,9 +28,9 @@ public class Robot extends TimedRobot {
   DriveTrain swerve = new DriveTrain();
   Timer timer;
   HolonomicDriveController autoController = new HolonomicDriveController(
-    new PIDController(0.5, 0, 0), 
-    new PIDController(0.5, 0, 0), 
-    new ProfiledPIDController(0.5, 0, 0, new TrapezoidProfile.Constraints(Units.degreesToRadians(180), Units.degreesToRadians(120)))
+    new PIDController(4.0, 0, 0), 
+    new PIDController(4.0, 0, 0), 
+    new ProfiledPIDController(4.0, 0, 0, new TrapezoidProfile.Constraints(Units.degreesToRadians(180), Units.degreesToRadians(120)))
   );
 
   // Robot Init
@@ -44,6 +44,12 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     swerve.updateOdometry();
     swerve.updateField();
+  }
+
+  // Teleop Init
+  @Override
+  public void teleopInit() {
+    swerve.setCoast();
   }
 
   // Teleop Periodic
@@ -66,6 +72,7 @@ public class Robot extends TimedRobot {
   // Autonomus Init
   @Override
   public void autonomousInit() {
+    swerve.setCoast();
     timer = new Timer();
     timer.start();
     swerve.resetDrive(Trajectories.simpleTrajectoryTest.getInitialPose());
@@ -87,6 +94,12 @@ public class Robot extends TimedRobot {
     } else {
       swerve.drive(0.0, 0.0, 0.0, Output.PERCENT, 0.0);
     }
+  }
+
+  // Disabled Init
+  @Override
+  public void disabledInit() {
+    swerve.setBrake();
   }
 }
 

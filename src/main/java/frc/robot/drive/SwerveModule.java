@@ -74,8 +74,8 @@ public class SwerveModule {
         if (output == Output.PERCENT) {
             setDrivePercent(state.speedMetersPerSecond);
         } else {
-            double driveFFOutput = driveFF.calculate(desiredState.speedMetersPerSecond);
-            double drivePIDOutput = drivePID.calculate(getDriveVelocity(), desiredState.speedMetersPerSecond);
+            double driveFFOutput = driveFF.calculate(state.speedMetersPerSecond);
+            double drivePIDOutput = drivePID.calculate(getDriveVelocity(), state.speedMetersPerSecond);
             double driveOutput = MathUtil.clamp(driveFFOutput + drivePIDOutput, -12, 12);
             setDriveVoltage(driveOutput);
         }

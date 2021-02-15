@@ -1,6 +1,8 @@
 package frc.robot.drive;
 
 import com.kauailabs.navx.frc.AHRS;
+import com.revrobotics.CANSparkMax.IdleMode;
+
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
@@ -38,9 +40,16 @@ public class DriveTrain {
 
     // Method to drive
     public void drive(double xSpeed, double ySpeed, double rot, Output output, double maxVel) {
-        SwerveModuleState[] states = kinematics.toSwerveModuleStates(
-            new ChassisSpeeds(xSpeed, ySpeed, rot)
-        );
+        SwerveModuleState[] states;
+        if (output == Output.PERCENT) {
+            states = kinematics.toSwerveModuleStates(
+                ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, gyro.getRotation2d())
+            );
+        } else {
+            states = kinematics.toSwerveModuleStates(
+                new ChassisSpeeds(xSpeed, ySpeed, rot)
+            );
+        }
         if (Math.abs(xSpeed) < 0.01 && Math.abs(ySpeed) < 0.01 && Math.abs(rot) < 0.01) {
             double crossAngle = new Rotation2d(baseLength, baseWidth).getRadians();
             SwerveModuleState flState = new SwerveModuleState(0.0, new Rotation2d(crossAngle));
@@ -83,6 +92,22 @@ public class DriveTrain {
         field.setRobotPose(pose);
         SmartDashboard.putData(field);
         System.out.println(pose);
+    }
+
+    // Method to set coast
+    public void setCoast() {
+        frontLeft.driveMotor.setIdleMode(IdleMode.kCoast);
+        frontRight.driveMotor.setIdleMode(IdleMode.kCoast);
+        backLeft.driveMotor.setIdleMode(IdleMode.kCoast);
+        backRight.driveMotor.setIdleMode(IdleMode.kCoast);
+    }
+
+    // Method to set brake
+    public void setBrake() {
+        frontLeft.driveMotor.setIdleMode(IdleMode.kBrake);
+        frontRight.driveMotor.setIdleMode(IdleMode.kBrake);
+        backLeft.driveMotor.setIdleMode(IdleMode.kBrake);
+        backRight.driveMotor.setIdleMode(IdleMode.kBrake);
     }
 
 

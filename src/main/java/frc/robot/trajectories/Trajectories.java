@@ -15,7 +15,7 @@ public class Trajectories {
 
     // Variables
     public static final double maxVelocity = Units.feetToMeters(8);
-    public static final double maxAcceleration = Units.feetToMeters(7);
+    public static final double maxAcceleration = Units.feetToMeters(4);
 
     // Simple Trajectory Test
     public static final Trajectory simpleTrajectoryTest = generateTrajectory(
